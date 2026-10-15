@@ -28,19 +28,18 @@ export function getActiveAiProviderName(): string {
 export async function analyzeImage(imageUrl: string, filename: string): Promise<VisionAnalysisResult> {
   if (process.env.GROQ_API_KEY) {
     try {
-      const prompt = `You are the AI vision analyzer for Memento.
-Analyze the provided image directly. Identify the people (e.g. John Cena, celebrities), scene, objects, clothing, text, and context.
-Return ONLY a valid JSON object without markdown formatting:
+      const prompt = `Identify everything in this image.
+JSON ONLY:
 {
-  "description": "2-3 sentence visual description of who or what is shown in the image",
-  "category": "photograph, screenshot, diagram, receipt, document, product, or other",
-  "tags": ["10-15 specific lowercase names, entities, keywords, associations like wwe, wrestling, actor"],
-  "visualObjects": ["specific objects, clothing, accessories, physical features seen in the image"],
-  "ocrText": "any readable text visible on shirts, caps, signs, or screen"
+  "description": "Short 2 sentence visual description",
+  "category": "photograph",
+  "tags": ["10-15 lowercase keywords, names (e.g. john cena, wwe), colors, symbols (e.g. pakistani flag, pakistan)"],
+  "visualObjects": ["items, clothing, faces, text seen"],
+  "ocrText": "any text visible"
 }`;
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const timeoutId = setTimeout(() => controller.abort(), 14000);
 
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -60,7 +59,7 @@ Return ONLY a valid JSON object without markdown formatting:
             },
           ],
           temperature: 0.1,
-          max_tokens: 300,
+          max_tokens: 160,
         }),
         signal: controller.signal,
       }).finally(() => clearTimeout(timeoutId));
@@ -81,7 +80,7 @@ Return ONLY a valid JSON object without markdown formatting:
         };
       } else {
         const errData = await response.json().catch(() => ({}));
-        console.warn('Groq Vision response not ok:', errData);
+        console.error('Groq Vision response error:', errData);
       }
     } catch (err) {
       console.warn('Groq Vision exception:', err);
@@ -171,13 +170,13 @@ export async function expandVisualSearchQuery(query: string): Promise<string[]> 
           messages: [
             {
               role: 'user',
-              content: `The user searches visual memory for: "${query}".
-Correct any typos. What visual objects, colors, symbols, national flags, clothing, or items are in this?
-Return ONLY a comma-separated list of 8-12 lowercase items (e.g. green, white, crescent, star, flag).`,
+              content: `The user searches visual memories for: "${query}".
+Correct typos and list 8-10 visual objects, colors, symbols, national flags, people or items related to this.
+Return ONLY comma-separated lowercase terms.`,
             },
           ],
           temperature: 0.1,
-          max_tokens: 300,
+          max_tokens: 120,
         }),
       });
 
