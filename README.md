@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Memento — AI-Powered Visual Memory
 
-## Getting Started
+> **"Your files remember where they are. Memento remembers what they contain."**
 
-First, run the development server:
+Memento is a visual memory application powered by Cloudinary and multimodal AI. It is designed for developers, architects, researchers, and creators who accumulate thousands of screenshots, system architecture diagrams, receipts, hardware snapshots, and visual research notes.
+
+---
+
+## 🌟 Key Features
+
+1. **Natural-Language Semantic & OCR Retrieval**
+   - Natural query support (e.g. *"AWS architecture diagram"*, *"receipts containing $49.99"*, *"blue mechanical keyboard"*, *"desk before renovation"*).
+   - Multi-signal ranking combining OCR text extraction, visual category classification, indexed tag clusters, and vector cosine similarity.
+   - Transparent ranking indicators explaining exactly why each image matched.
+
+2. **Cloudinary Integration**
+   - Secure signed direct uploads from the client browser via server-side signing (`/api/cloudinary/sign`).
+   - Dynamic transformations with automatic format (`f_auto`) and quality optimization (`q_auto`).
+   - Optimized thumbnail and preview delivery without exposing API secrets.
+
+3. **Multi-Stage Processing Pipeline**
+   - Modular architecture: Cloudinary CDN storage ➔ basic metadata extraction ➔ OCR text indexing ➔ AI vision descriptions ➔ vector embeddings.
+   - Built-in heuristic and lexical fallback ensuring 100% functionality even when external AI API keys are not yet configured.
+
+4. **Visual Exploration Suite**
+   - **Visual Timeline**: Chronological browsing by date with side-by-side comparison mode.
+   - **Similar Images Explorer**: Find related images based on embedding vector proximity and shared entities.
+   - **Collections**: Group memories into customizable thematic workspaces.
+   - **Detail Intelligence View**: Inspect original resolution, extracted OCR text, detected tags, and image metrics.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure Environment Variables (Optional)
+
+Copy `.env.example` to `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local`:
+
+```env
+# Cloudinary Credentials (Server-side signed uploads & CDN delivery)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+
+# AI Multimodal Vision (Optional - intelligent fallback active if empty)
+OPENAI_API_KEY=your_openai_api_key
+```
+
+> **Note:** Memento runs out-of-the-box in **Demo & Local Sandbox Mode** with rich sample data even without any API keys configured!
+
+### 3. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗 Architecture
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` — Next.js App Router pages:
+  - `/` — Overview spotlight & natural search hero
+  - `/memories` — Full visual gallery with category and collection filters
+  - `/search` — Multi-signal ranked search results with match explanations
+  - `/timeline` — Chronological timeline with image comparison
+  - `/collections` — Collection manager
+  - `/similar` — Visual similarity explorer
+  - `/settings` — Real-time telemetry and pipeline status
+- `app/api/` — Backend API routes:
+  - `/api/cloudinary/sign` — Secure server-side signature generator
+  - `/api/assets` — Asset indexing and retrieval
+  - `/api/search` — Semantic and OCR search engine
+  - `/api/similar` — Vector similarity matching
+  - `/api/collections` — Collection operations
+  - `/api/status` — Integration health check
+- `lib/cloudinary/` — Cloudinary SDK configuration and URL transformation utilities
+- `lib/ai/` — Vision analysis, OCR extraction, and vector embedding adapters
+- `lib/search/` — Multi-signal ranking engine
+- `lib/data/` — Persistence layer & rich sample datasets
+- `types/` — Shared TypeScript data models

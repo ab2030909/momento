@@ -1,0 +1,30 @@
+[
+  {
+    "id": "col-arch",
+    "name": "Cloud Architecture & Systems",
+    "description": "System diagrams, AWS/GCP topology graphs, serverless microservice plans",
+    "createdAt": "2026-10-03T00:29:08.365Z",
+    "assetCount": 3
+  },
+  {
+    "id": "col-desk",
+    "name": "Workspace Evolution",
+    "description": "Studio setups, mechanical keyboards, monitor ergonomics through the seasons",
+    "createdAt": "2026-09-25T00:29:08.367Z",
+    "assetCount": 2
+  },
+  {
+    "id": "col-receipts",
+    "name": "Hardware & SaaS Invoices",
+    "description": "Purchases, hardware receipts, and software subscriptions",
+    "createdAt": "2026-10-10T00:29:08.367Z",
+    "assetCount": 2
+  },
+  {
+    "id": "col-research",
+    "name": "AI & Vision Research",
+    "description": "Screenshots of benchmark charts, model parameters, and paper figures",
+    "createdAt": "2026-10-13T00:29:08.367Z",
+    "assetCount": 2
+  }
+]

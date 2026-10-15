@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-black: #050805;
+    --term-green: #00ff66;
+    --term-green-dim: #00aa44;
+    --term-green-dark: #003311;
+    --term-border: #005522;
+    --term-glow: rgba(0, 255, 102, 0.2);
+  }
+
+  body {
+    background-color: #030603;
+    color: #00ff66;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    letter-spacing: 0.04em;
+    overflow-x: hidden;
+    min-height: 100vh;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* CRT scanlines effect */
+.crt::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* Subtle CRT vignette & flicker */
+.terminal-glow {
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.45);
+}
+
+.terminal-box {
+  background: rgba(3, 8, 4, 0.85);
+  border: 1px solid #005522;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.05);
+}
+
+.terminal-box:hover {
+  border-color: #00aa44;
+}
+
+.terminal-border-active {
+  border-color: #00ff66 !important;
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
+}
+
+/* Custom terminal scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #020502;
+}
+::-webkit-scrollbar-thumb {
+  background: #005522;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00aa44;
+}
+
+/* Blinking terminal cursor */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s infinite;
 }
