@@ -43,11 +43,16 @@ export default function LoginPage() {
     }
   }, []);
 
+  const hasRealClientId = Boolean(
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
+    !process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID.includes('placeholder')
+  );
+
   // Initialize official Google OAuth Button
   useEffect(() => {
-    if (googleClientReady && window.google?.accounts?.id && googleBtnRef.current) {
+    if (googleClientReady && window.google?.accounts?.id && googleBtnRef.current && hasRealClientId) {
       try {
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '1088481234567-placeholder.apps.googleusercontent.com';
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
 
         window.google.accounts.id.initialize({
           client_id: clientId,
@@ -75,7 +80,7 @@ export default function LoginPage() {
         console.warn('Google GSI button initialization:', err);
       }
     }
-  }, [googleClientReady, loginWithGoogleCredential, router]);
+  }, [googleClientReady, loginWithGoogleCredential, router, hasRealClientId]);
 
   const handleSimulatedSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,20 +129,34 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col items-center justify-center py-1">
-            {/* Real Google GSI Button Mount */}
-            <div ref={googleBtnRef} className="flex justify-center min-h-[44px]" />
+            {/* Real Google GSI Button Mount if client ID provided */}
+            {hasRealClientId && (
+              <div ref={googleBtnRef} className="flex justify-center min-h-[44px]" />
+            )}
 
-            {/* Direct Google Popup Trigger Button */}
+            {!hasRealClientId && (
+              <div className="w-full mb-3 border border-amber-500/60 bg-amber-950/20 p-2.5 text-[10px] text-amber-300">
+                <div className="flex items-center gap-1.5 font-bold text-amber-200 mb-1">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  <span>GOOGLE CLIENT ID NOT CONFIGURED YET</span>
+                </div>
+                <p className="text-[9px] text-amber-300/80 leading-relaxed">
+                  To connect your live Google Cloud project, add <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to your <code>.env.local</code>. You can also sign in right now below:
+                </p>
+              </div>
+            )}
+
+            {/* Direct Google Action Button */}
             <button
               type="button"
               onClick={() => {
-                if (window.google?.accounts?.id) {
+                if (hasRealClientId && window.google?.accounts?.id) {
                   window.google.accounts.id.prompt();
                 } else {
                   setShowSimulatedInput(true);
                 }
               }}
-              className="mt-3 group flex w-full items-center justify-center gap-3 border-2 border-[#00ff66] bg-[#00220a] hover:bg-[#004414] py-3 text-xs font-bold text-[#00ff66] tracking-wider transition-all hover:shadow-[0_0_15px_#00ff66]"
+              className="group flex w-full items-center justify-center gap-3 border-2 border-[#00ff66] bg-[#00220a] hover:bg-[#004414] py-3 text-xs font-bold text-[#00ff66] tracking-wider transition-all hover:shadow-[0_0_15px_#00ff66]"
             >
               {/* Google SVG Icon */}
               <svg className="h-4 w-4" viewBox="0 0 24 24">
