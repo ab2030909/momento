@@ -6,18 +6,40 @@ import { UserProfile } from '@/types';
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
-  loginWithGoogle: () => void;
+  loginWithGoogleCredential: (credential: string) => void;
+  loginWithGoogleSimulated: (emailInput?: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
-  loginWithGoogle: () => {},
+  loginWithGoogleCredential: () => {},
+  loginWithGoogleSimulated: () => {},
   logout: () => {},
 });
 
 const AUTH_STORAGE_KEY = 'memento_user_profile';
+
+// Helper to decode Google JWT token client-side without heavy external dependencies
+function decodeGoogleJwt(token: string): { sub: string; name: string; email: string; picture: string } | null {
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error('Failed to decode Google JWT:', e);
+    return null;
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -36,26 +58,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const loginWithGoogle = () => {
-    // Generates or simulates a Google Single-Sign-On Account profile with unique Google ID
-    const sampleAccounts: UserProfile[] = [
-      {
-        id: 'google-usr-948123',
-        name: 'Abdullah Haroon',
-        email: 'abdullah.haroon@gmail.com',
-        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
-      },
-      {
-        id: 'google-usr-512094',
-        name: 'Research Operator',
-        email: 'operator@cloud.dev',
-        avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=120&h=120&q=80',
-      },
-    ];
+  const loginWithGoogleCredential = (credential: string) => {
+    const decoded = decodeGoogleJwt(credential);
+    if (!decoded) return;
 
-    // Select account or prompt for a Google email
-    const emailPrompt = prompt('Sign in with Google Account:\nEnter Google Email (or leave empty for default):', 'user@gmail.com');
-    const email = emailPrompt && emailPrompt.trim() ? emailPrompt.trim() : 'user@gmail.com';
+    const profile: UserProfile = {
+      id: `google-${decoded.sub}`,
+      name: decoded.name || decoded.email.split('@')[0],
+      email: decoded.email,
+      avatarUrl: decoded.picture || `https://api.dicebear.com/7.x/identicon/svg?seed=${decoded.sub}`,
+    };
+
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(profile));
+    setUser(profile);
+  };
+
+  const loginWithGoogleSimulated = (emailInput?: string) => {
+    const email = emailInput && emailInput.trim() ? emailInput.trim() : 'abdullah.haroon@gmail.com';
     const name = email.split('@')[0].replace(/[._]/g, ' ').toUpperCase();
     const id = `google-usr-${btoa(email).replace(/=/g, '').slice(0, 10)}`;
 
@@ -63,12 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id,
       name,
       email,
-      avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
+      avatarUrl: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80`,
     };
 
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(signedInUser));
     setUser(signedInUser);
-    window.location.reload();
   };
 
   const logout = () => {
@@ -78,10 +96,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        loginWithGoogleCredential,
+        loginWithGoogleSimulated,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
 export const useAuth = () => useContext(AuthContext);
+

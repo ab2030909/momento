@@ -14,9 +14,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SystemStatus } from '@/types';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 export function TerminalSidebar({ systemStatus }: { systemStatus?: SystemStatus | null }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { name: 'OVERVIEW', href: '/' },
@@ -99,6 +101,47 @@ export function TerminalSidebar({ systemStatus }: { systemStatus?: SystemStatus 
         <div className="hover:text-[#00ff66] cursor-pointer">+ RECALL</div>
         <div className="hover:text-[#00ff66] cursor-pointer">+ VISUALIZE</div>
       </div>
+
+      {/* User Profile on the Left Sidebar */}
+      {user ? (
+        <div className="border border-[#00ff66] bg-[#020902] p-2.5 mb-2 shadow-[0_0_10px_rgba(0,255,102,0.15)]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="relative">
+              <img
+                src={user.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80'}
+                alt={user.name}
+                className="h-9 w-9 rounded-full border border-[#00ff66] object-cover filter contrast-125"
+              />
+              <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-[#00ff66] ring-1 ring-black animate-pulse" />
+            </div>
+            <div className="overflow-hidden flex-1">
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-bold text-[#00ff66] truncate">{user.name}</span>
+              </div>
+              <p className="text-[8px] text-[#00aa44] truncate">{user.email}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between pt-1 border-t border-[#005522]/80 text-[8px]">
+            <span className="text-[#00ff66] flex items-center gap-1 font-semibold">
+              <span className="h-1 w-1 rounded-full bg-[#00ff66]" />
+              GOOGLE VERIFIED
+            </span>
+            <button
+              onClick={logout}
+              className="text-[#ff6666] hover:text-[#ff3333] hover:underline font-bold"
+            >
+              [SIGN OUT]
+            </button>
+          </div>
+        </div>
+      ) : (
+        <Link
+          href="/login"
+          className="border border-[#00ff66] bg-[#00220a] hover:bg-[#004414] p-2 text-center text-[10px] font-bold text-[#00ff66] mb-2 block tracking-wider transition-all hover:shadow-[0_0_10px_#00ff66]"
+        >
+          [ + SIGN IN WITH GOOGLE ]
+        </Link>
+      )}
 
       {/* Terminal prompt footer */}
       <div className="border-t border-[#005522] pt-2 text-[10px] text-[#00ff66] flex items-center gap-1 font-bold">
