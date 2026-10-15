@@ -187,7 +187,8 @@ export function UploadModal({
       });
 
       if (!assetRes.ok) {
-        throw new Error('Indexing pipeline rejected payload');
+        const errorData = await assetRes.json().catch(() => ({}));
+        throw new Error(errorData?.error || 'Indexing pipeline rejected payload');
       }
 
       const { asset } = await assetRes.json();

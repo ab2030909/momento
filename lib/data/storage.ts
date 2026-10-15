@@ -13,21 +13,23 @@ function ensureDataDir() {
   }
 }
 
-export function getAllAssets(userId?: string): VisualAsset[] {
+function getRawAllAssets(): VisualAsset[] {
   ensureDataDir();
-  let all: VisualAsset[] = [];
   if (!fs.existsSync(ASSETS_FILE)) {
     fs.writeFileSync(ASSETS_FILE, JSON.stringify(INITIAL_DEMO_ASSETS, null, 2), 'utf-8');
-    all = INITIAL_DEMO_ASSETS;
-  } else {
-    try {
-      const raw = fs.readFileSync(ASSETS_FILE, 'utf-8');
-      all = JSON.parse(raw);
-    } catch (err) {
-      console.error('Error reading assets file:', err);
-      all = INITIAL_DEMO_ASSETS;
-    }
+    return [...INITIAL_DEMO_ASSETS];
   }
+  try {
+    const raw = fs.readFileSync(ASSETS_FILE, 'utf-8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error('Error reading assets file:', err);
+    return [...INITIAL_DEMO_ASSETS];
+  }
+}
+
+export function getAllAssets(userId?: string): VisualAsset[] {
+  const all = getRawAllAssets();
 
   // Filter rule:
   // 1. Everyone can see Demo pictures (isDemo === true)
@@ -46,12 +48,12 @@ export function saveAllAssets(assets: VisualAsset[]): void {
 }
 
 export function getAssetById(id: string): VisualAsset | undefined {
-  const assets = getAllAssets();
+  const assets = getRawAllAssets();
   return assets.find((a) => a.id === id);
 }
 
 export function createOrUpdateAsset(asset: VisualAsset): VisualAsset {
-  const assets = getAllAssets();
+  const assets = getRawAllAssets();
   const index = assets.findIndex((a) => a.id === asset.id);
   if (index >= 0) {
     assets[index] = asset;
@@ -63,7 +65,7 @@ export function createOrUpdateAsset(asset: VisualAsset): VisualAsset {
 }
 
 export function deleteAsset(id: string): boolean {
-  const assets = getAllAssets();
+  const assets = getRawAllAssets();
   const filtered = assets.filter((a) => a.id !== id);
   if (filtered.length !== assets.length) {
     saveAllAssets(filtered);

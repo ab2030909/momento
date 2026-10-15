@@ -86,14 +86,14 @@ export async function POST(req: Request) {
       statusMessage: `Analyzed via ${analysis.provider}`,
       collectionIds,
       isDemo: false,
-      userId: userId || undefined,
+      userId: authenticatedUserId,
     };
 
     createOrUpdateAsset(newAsset);
 
     return NextResponse.json({ asset: newAsset });
   } catch (error: any) {
-    console.error('Error creating asset:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('CRITICAL: Error in POST /api/assets:', error);
+    return NextResponse.json({ error: error?.message || 'Internal pipeline ingestion failure' }, { status: 500 });
   }
 }
