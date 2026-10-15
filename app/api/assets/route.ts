@@ -40,6 +40,14 @@ export async function POST(req: Request) {
       userId,
     } = body;
 
+    const authenticatedUserId = req.headers.get('x-user-id') || userId;
+    if (!authenticatedUserId) {
+      return NextResponse.json(
+        { error: 'ACCESS DENIED: Authentication required to upload visual memories.' },
+        { status: 401 }
+      );
+    }
+
     if (!secureUrl) {
       return NextResponse.json({ error: 'secureUrl is required' }, { status: 400 });
     }

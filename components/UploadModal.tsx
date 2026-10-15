@@ -35,7 +35,65 @@ export function UploadModal({
   const [progressMsg, setProgressMsg] = React.useState<string>('');
   const [errorMsg, setErrorMsg] = React.useState<string>('');
 
+  const handleClose = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setStatus('idle');
+    setProgressMsg('');
+    setErrorMsg('');
+    onClose();
+  };
+
   if (!isOpen) return null;
+
+  // Gatekeeper: If user is not logged in, require Google Authentication
+  if (!user) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
+        <div className="relative w-full max-w-md border-2 border-[#00ff66] bg-[#020502] p-6 shadow-[0_0_25px_rgba(0,255,102,0.25)] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#005522]">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-[#00ff66] animate-pulse" />
+              <h3 className="font-bold text-[#00ff66] tracking-wider text-sm">
+                // AUTHENTICATION_REQUIRED
+              </h3>
+            </div>
+            <button
+              onClick={handleClose}
+              className="border border-[#00ff66] bg-[#00220a] hover:bg-[#ff3333] hover:text-black px-2 py-0.5 font-bold"
+            >
+              [ X ]
+            </button>
+          </div>
+
+          <div className="border border-[#005522] bg-[#010401] p-3 text-[11px] space-y-2 text-[#00aa44]">
+            <p className="text-[#00ff66] font-bold">
+              [!] ACCESS RESTRICTED TO VERIFIED USERS
+            </p>
+            <p>
+              Anonymous uploads are disabled. To ingest visual memories and isolate them into your private vault, please log in with your Google account.
+            </p>
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2 border-t border-[#005522]">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="border border-[#005522] bg-[#010401] px-3 py-1.5 text-[10px] text-[#00aa44] hover:text-[#00ff66]"
+            >
+              [ CANCEL ]
+            </button>
+            <a
+              href="/login"
+              className="border-2 border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-1.5 text-[10px] font-bold text-[#00ff66] transition-all hover:shadow-[0_0_12px_#00ff66]"
+            >
+              [ GO TO GOOGLE LOGIN ]
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,7 +110,7 @@ export function UploadModal({
 
     try {
       setStatus('uploading');
-      setProgressMsg('ACQUIRING CLOUDINARY SIGNATURE TOKEN...');
+      setProgressMsg('ACQUIRING CLOUDINARY SIGNATURE TOKEN & COMPRESSION PROFILE...');
 
       const signRes = await fetch('/api/cloudinary/sign', {
         method: 'POST',
@@ -69,7 +127,7 @@ export function UploadModal({
       let format = selectedFile.type.split('/')[1] || 'png';
 
       if (signData.configured && signData.signature) {
-        setProgressMsg('TRANSMITTING PAYLOAD DIRECTLY TO CLOUDINARY CDN...');
+        setProgressMsg('TRANSMITTING TO CLOUDINARY WITH AUTO-COMPRESSION (f_auto, q_auto)...');
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('api_key', signData.apiKey);
@@ -135,7 +193,7 @@ export function UploadModal({
       const { asset } = await assetRes.json();
 
       setStatus('done');
-      setProgressMsg('PAYLOAD ACQUIRED & INDEXED SUCCESSFULLY!');
+      setProgressMsg('PAYLOAD ACQUIRED, COMPRESSED & INDEXED SUCCESSFULLY!');
       setTimeout(() => {
         onUploadComplete(asset);
         handleClose();
@@ -145,15 +203,6 @@ export function UploadModal({
       setStatus('error');
       setErrorMsg(err.message || 'Operation failed.');
     }
-  };
-
-  const handleClose = () => {
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    setStatus('idle');
-    setProgressMsg('');
-    setErrorMsg('');
-    onClose();
   };
 
   return (
@@ -186,7 +235,7 @@ export function UploadModal({
                 SELECT IMAGE FILE TO INGEST
               </p>
               <p className="text-[9px] text-[#00aa44] mt-1">
-                PNG, JPG, WEBP, GIF UP TO 25MB
+                PNG, JPG, WEBP, GIF (AUTO-COMPRESSED VIA CLOUDINARY)
               </p>
               <input
                 type="file"
@@ -211,6 +260,18 @@ export function UploadModal({
               >
                 [ RESET ]
               </button>
+            </div>
+          )}
+
+          {/* Compression notice */}
+          {selectedFile && (
+            <div className="border border-[#005522] bg-[#010401] p-2 text-[10px] text-[#00aa44] flex items-center justify-between">
+              <div>
+                FILE SIZE: <span className="text-[#00ff66] font-bold">{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+              </div>
+              <div className="text-[9px] text-[#00ff66]">
+                [✓] CLOUDINARY AUTO-OPTIMIZE: ACTIVE
+              </div>
             </div>
           )}
 
