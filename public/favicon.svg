@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="4" fill="#020502" stroke="#00ff66" stroke-width="2"/>
+  <!-- CRT Matrix grid lines inside favicon -->
+  <line x1="0" y1="8" x2="32" y2="8" stroke="#003311" stroke-width="0.5"/>
+  <line x1="0" y1="16" x2="32" y2="16" stroke="#003311" stroke-width="0.5"/>
+  <line x1="0" y1="24" x2="32" y2="24" stroke="#003311" stroke-width="0.5"/>
+  <line x1="8" y1="0" x2="8" y2="32" stroke="#003311" stroke-width="0.5"/>
+  <line x1="16" y1="0" x2="16" y2="32" stroke="#003311" stroke-width="0.5"/>
+  <line x1="24" y1="0" x2="24" y2="32" stroke="#003311" stroke-width="0.5"/>
+
+  <!-- Cyberpunk Terminal 'M' Monogram with phosphor green glow -->
+  <path d="M7 24 V8 H10.5 L16 16.5 L21.5 8 H25 V24 H21.5 V13.5 L16.5 21 H15.5 L10.5 13.5 V24 Z" 
+        fill="#00ff66" 
+        filter="drop-shadow(0 0 2px #00ff66)"/>
+</svg>

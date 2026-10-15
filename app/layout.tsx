@@ -6,6 +6,11 @@ import { AuthProvider } from '@/lib/auth/AuthContext';
 export const metadata: Metadata = {
   title: 'MEMENTO.EXE - VISUAL-MEMORY-SYSTEM v1.0.0',
   description: 'Cyberpunk terminal interface for visual memory search powered by Cloudinary and Groq AI.',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
