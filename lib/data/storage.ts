@@ -3,28 +3,42 @@ import path from 'path';
 import { VisualAsset, Collection } from '@/types';
 import { INITIAL_COLLECTIONS, INITIAL_DEMO_ASSETS } from './demoData';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+// Serverless-resilient data path: Vercel serverless functions have a read-only root (/var/task)
+// but allow writing to /tmp.
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DATA_DIR = isServerless ? path.join('/tmp', 'momento_data') : path.join(process.cwd(), 'data');
 const ASSETS_FILE = path.join(DATA_DIR, 'assets.json');
 const COLLECTIONS_FILE = path.join(DATA_DIR, 'collections.json');
 
+// In-memory global fallback to survive read-only or ephemeral environments
+let inMemoryAssets: VisualAsset[] = [...INITIAL_DEMO_ASSETS];
+let inMemoryCollections: Collection[] = [...INITIAL_COLLECTIONS];
+
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch (e) {
+    console.warn('Filesystem read-only, operating in memory:', e);
   }
 }
 
 function getRawAllAssets(): VisualAsset[] {
   ensureDataDir();
-  if (!fs.existsSync(ASSETS_FILE)) {
-    fs.writeFileSync(ASSETS_FILE, JSON.stringify(INITIAL_DEMO_ASSETS, null, 2), 'utf-8');
-    return [...INITIAL_DEMO_ASSETS];
-  }
   try {
+    if (!fs.existsSync(ASSETS_FILE)) {
+      try {
+        fs.writeFileSync(ASSETS_FILE, JSON.stringify(inMemoryAssets, null, 2), 'utf-8');
+      } catch {}
+      return inMemoryAssets;
+    }
     const raw = fs.readFileSync(ASSETS_FILE, 'utf-8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    inMemoryAssets = parsed;
+    return parsed;
   } catch (err) {
-    console.error('Error reading assets file:', err);
-    return [...INITIAL_DEMO_ASSETS];
+    return inMemoryAssets;
   }
 }
 
@@ -43,8 +57,13 @@ export function getAllAssets(userId?: string): VisualAsset[] {
 }
 
 export function saveAllAssets(assets: VisualAsset[]): void {
+  inMemoryAssets = assets;
   ensureDataDir();
-  fs.writeFileSync(ASSETS_FILE, JSON.stringify(assets, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(ASSETS_FILE, JSON.stringify(assets, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('Filesystem write prevented, preserved in memory:', err);
+  }
 }
 
 export function getAssetById(id: string): VisualAsset | undefined {
@@ -76,27 +95,34 @@ export function deleteAsset(id: string): boolean {
 
 export function getAllCollections(): Collection[] {
   ensureDataDir();
-  if (!fs.existsSync(COLLECTIONS_FILE)) {
-    fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(INITIAL_COLLECTIONS, null, 2), 'utf-8');
-    return INITIAL_COLLECTIONS;
-  }
   try {
+    if (!fs.existsSync(COLLECTIONS_FILE)) {
+      try {
+        fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(inMemoryCollections, null, 2), 'utf-8');
+      } catch {}
+      return inMemoryCollections;
+    }
     const raw = fs.readFileSync(COLLECTIONS_FILE, 'utf-8');
     const cols: Collection[] = JSON.parse(raw);
-    const assets = getAllAssets();
+    inMemoryCollections = cols;
+    const assets = getRawAllAssets();
     return cols.map((c) => ({
       ...c,
       assetCount: assets.filter((a) => a.collectionIds?.includes(c.id)).length,
     }));
   } catch (err) {
-    console.error('Error reading collections:', err);
-    return INITIAL_COLLECTIONS;
+    return inMemoryCollections;
   }
 }
 
 export function saveAllCollections(collections: Collection[]): void {
+  inMemoryCollections = collections;
   ensureDataDir();
-  fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(collections, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(collections, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('Collections filesystem write prevented, preserved in memory:', err);
+  }
 }
 
 export function createCollection(name: string, description: string): Collection {
