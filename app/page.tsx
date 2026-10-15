@@ -7,7 +7,6 @@ import { VisualAsset, Collection } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { AssetDetailModal } from '@/components/AssetDetailModal';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { NeuralWorldMapCanvas } from '@/components/NeuralWorldMapCanvas';
 import {
   Search,
   CheckSquare,
@@ -104,11 +103,8 @@ export default function OverviewPage() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 text-xs font-mono text-[#00ff66]">
       {/* Center Left Main Panel (8 Cols) */}
       <div className="lg:col-span-8 space-y-3">
-        {/* 1. Search Box Module with Neural World Map Canvas */}
-        <div className="relative overflow-hidden border border-[#005522] bg-[#020602] p-3 shadow-[0_0_15px_rgba(0,255,102,0.06)]">
-          {/* Animated Neural World Map Canvas in Background */}
-          <NeuralWorldMapCanvas />
-
+        {/* 1. Search Box Module with Neural Matrix styling */}
+        <div className="relative overflow-hidden border border-[#005522] bg-[#020602]/70 backdrop-blur-sm p-3 shadow-[0_0_15px_rgba(0,255,102,0.06)]">
           <div className="relative z-10">
             <div className="flex items-center justify-between text-[10px] text-[#00aa44] mb-1 font-semibold">
               <span>// SEARCH YOUR // GLOBAL NEURAL MATRIX</span>
