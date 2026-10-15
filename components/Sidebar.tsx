@@ -33,7 +33,6 @@ export function Sidebar({ systemStatus }: SidebarProps) {
     { name: 'Collections', href: '/collections', icon: FolderKanban },
     { name: 'Visual Timeline', href: '/timeline', icon: Clock },
     { name: 'Similar Explorer', href: '/similar', icon: Sparkles },
-    { name: 'Settings & Status', href: '/settings', icon: Settings },
   ];
 
   return (

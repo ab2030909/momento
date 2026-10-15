@@ -25,7 +25,6 @@ export function TerminalSidebar({ systemStatus }: { systemStatus?: SystemStatus 
     { name: 'SIMILAR IMAGES', href: '/similar' },
     { name: 'COLLECTIONS', href: '/collections' },
     { name: 'TIMELINE', href: '/timeline' },
-    { name: 'SETTINGS', href: '/settings' },
   ];
 
   return (
