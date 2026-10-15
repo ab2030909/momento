@@ -45,15 +45,13 @@ function getRawAllAssets(): VisualAsset[] {
 export function getAllAssets(userId?: string): VisualAsset[] {
   const all = getRawAllAssets();
 
-  // Filter rule:
-  // 1. Everyone can see Demo pictures (isDemo === true)
-  // 2. Personal uploads are ONLY visible to the user who uploaded them (userId === currentUserId)
-  // 3. If no userId is specified (guest), only demo pictures are returned
-  if (!userId) {
-    return all.filter((a) => a.isDemo === true);
+  // If no user specified or guest user, show demo pictures + guest uploads
+  if (!userId || userId === 'guest-user') {
+    return all.filter((a) => a.isDemo === true || !a.userId || a.userId === 'guest-user');
   }
 
-  return all.filter((a) => a.isDemo === true || a.userId === userId);
+  // If authenticated user, show demo pictures + their own uploads + guest uploads
+  return all.filter((a) => a.isDemo === true || a.userId === userId || a.userId === 'guest-user');
 }
 
 export function saveAllAssets(assets: VisualAsset[]): void {

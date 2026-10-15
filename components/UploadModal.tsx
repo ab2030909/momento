@@ -46,55 +46,6 @@ export function UploadModal({
 
   if (!isOpen) return null;
 
-  // Gatekeeper: If user is not logged in, require Google Authentication
-  if (!user) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
-        <div className="relative w-full max-w-md border-2 border-[#00ff66] bg-[#020502] p-6 shadow-[0_0_25px_rgba(0,255,102,0.25)] space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#005522]">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-[#00ff66] animate-pulse" />
-              <h3 className="font-bold text-[#00ff66] tracking-wider text-sm">
-                // AUTHENTICATION_REQUIRED
-              </h3>
-            </div>
-            <button
-              onClick={handleClose}
-              className="border border-[#00ff66] bg-[#00220a] hover:bg-[#ff3333] hover:text-black px-2 py-0.5 font-bold"
-            >
-              [ X ]
-            </button>
-          </div>
-
-          <div className="border border-[#005522] bg-[#010401] p-3 text-[11px] space-y-2 text-[#00aa44]">
-            <p className="text-[#00ff66] font-bold">
-              [!] ACCESS RESTRICTED TO VERIFIED USERS
-            </p>
-            <p>
-              Anonymous uploads are disabled. To ingest visual memories and isolate them into your private vault, please log in with your Google account.
-            </p>
-          </div>
-
-          <div className="pt-2 flex justify-end gap-2 border-t border-[#005522]">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="border border-[#005522] bg-[#010401] px-3 py-1.5 text-[10px] text-[#00aa44] hover:text-[#00ff66]"
-            >
-              [ CANCEL ]
-            </button>
-            <a
-              href="/login"
-              className="border-2 border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-1.5 text-[10px] font-bold text-[#00ff66] transition-all hover:shadow-[0_0_12px_#00ff66]"
-            >
-              [ GO TO GOOGLE LOGIN ]
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
