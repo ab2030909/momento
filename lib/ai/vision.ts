@@ -28,14 +28,15 @@ export function getActiveAiProviderName(): string {
 export async function analyzeImage(imageUrl: string, filename: string): Promise<VisionAnalysisResult> {
   if (process.env.GROQ_API_KEY) {
     try {
-      const prompt = `Identify everything in this image.
-JSON ONLY:
+      const prompt = `You are an expert visual recognizer. Identify what is shown in this image.
+Name specific celebrities/people (e.g. John Cena, The Rock, Messi), sport/event (e.g. WWE, wrestling, FIFA), flags/logos (e.g. Pakistan, crescent), clothing, colors, and any text visible.
+Return JSON ONLY:
 {
-  "description": "Short 2 sentence visual description",
+  "description": "2 sentence visual description naming who or what is seen",
   "category": "photograph",
-  "tags": ["10-15 lowercase keywords, names (e.g. john cena, wwe), colors, symbols (e.g. pakistani flag, pakistan)"],
-  "visualObjects": ["items, clothing, faces, text seen"],
-  "ocrText": "any text visible"
+  "tags": ["12-16 lowercase keywords, specific names like john cena, cena, wwe, wrestler, green shirt, cap, never give up"],
+  "visualObjects": ["specific objects, clothing, accessories, faces, logos"],
+  "ocrText": "any readable text seen"
 }`;
 
       const controller = new AbortController();
@@ -59,7 +60,7 @@ JSON ONLY:
             },
           ],
           temperature: 0.1,
-          max_tokens: 160,
+          max_tokens: 250,
         }),
         signal: controller.signal,
       }).finally(() => clearTimeout(timeoutId));
@@ -123,9 +124,16 @@ function generateHeuristicAnalysis(filename: string): VisionAnalysisResult {
 }
 
 /**
- * Common national symbols & flag associations dictionary for instant zero-latency match
+ * Common cultural, athlete & national associations dictionary for zero-latency match
  */
-const NATIONAL_SYMBOLS: Record<string, string[]> = {
+const VISUAL_ASSOCIATIONS: Record<string, string[]> = {
+  // WWE / Celebrities
+  'john cena': ['john cena', 'cena', 'wwe', 'wrestler', 'never give up', 'u cant see me', 'u can t see me', 'u me', 'green shirt', 'cap', 'world wrestling entertainment'],
+  'cena': ['john cena', 'cena', 'wwe', 'wrestler', 'never give up', 'u cant see me'],
+  'wwe': ['john cena', 'wwe', 'wrestling', 'wrestler', 'never give up', 'smackdown', 'raw'],
+  'wrestler': ['wrestler', 'wrestling', 'wwe', 'john cena'],
+  'never give up': ['john cena', 'cena', 'wwe', 'wrestler', 'never give up'],
+  // National Symbols & Flags
   pakistan: ['green', 'white', 'crescent', 'star', 'flag', 'pakistani flag', 'pakistani', 'paksitan'],
   paksitan: ['green', 'white', 'crescent', 'star', 'flag', 'pakistani flag', 'pakistan'],
   america: ['red', 'white', 'blue', 'stars', 'stripes', 'flag', 'usa', 'united states'],
@@ -146,11 +154,11 @@ export async function expandVisualSearchQuery(query: string): Promise<string[]> 
   const lowerQ = query.toLowerCase().trim();
   const results: string[] = [];
 
-  // 1. Instant dictionary lookups for countries/flags/symbols
-  if (NATIONAL_SYMBOLS[lowerQ]) {
-    results.push(...NATIONAL_SYMBOLS[lowerQ]);
+  // 1. Instant dictionary lookups for celebrities, catchphrases, countries & flags
+  if (VISUAL_ASSOCIATIONS[lowerQ]) {
+    results.push(...VISUAL_ASSOCIATIONS[lowerQ]);
   }
-  for (const [key, vals] of Object.entries(NATIONAL_SYMBOLS)) {
+  for (const [key, vals] of Object.entries(VISUAL_ASSOCIATIONS)) {
     if (lowerQ.includes(key)) {
       results.push(...vals);
     }
