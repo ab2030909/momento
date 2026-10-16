@@ -33,9 +33,9 @@ export function AssetDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
       <div
-        className="relative flex flex-col lg:flex-row w-full max-w-5xl max-h-[90vh] overflow-hidden border-2 border-[#00ff66] bg-[#020502] shadow-[0_0_25px_rgba(0,255,102,0.3)]"
+        className="relative flex flex-col lg:flex-row w-full max-w-5xl max-h-[94vh] overflow-y-auto lg:overflow-hidden border-2 border-[#00ff66] bg-[#020502] shadow-[0_0_25px_rgba(0,255,102,0.3)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header bar in modal */}
@@ -49,11 +49,11 @@ export function AssetDetailModal({
         </div>
 
         {/* Left Side: Image Visualizer */}
-        <div className="relative flex flex-1 items-center justify-center bg-black p-4 border-b lg:border-b-0 lg:border-r border-[#005522]">
+        <div className="relative flex shrink-0 lg:flex-1 items-center justify-center bg-black p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-[#005522] min-h-[220px]">
           <img
             src={asset.previewUrl || asset.secureUrl}
             alt={asset.originalFilename}
-            className="max-h-[70vh] w-auto max-w-full object-contain filter contrast-110"
+            className="max-h-[45vh] lg:max-h-[70vh] w-auto max-w-full object-contain filter contrast-110"
           />
           <a
             href={asset.secureUrl}

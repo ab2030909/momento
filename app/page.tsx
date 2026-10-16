@@ -120,20 +120,20 @@ export default function OverviewPage() {
               Find anything in your images. Products, text, places, diagrams, or just describe what you remember.
             </p>
 
-            <form onSubmit={handleSearchSubmit} className="flex gap-2 mb-3">
+            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2 mb-3">
               <div className="relative flex-1 flex items-center border border-[#005522] bg-[#010401]/90 backdrop-blur-sm">
                 <span className="pl-2.5 text-[#00ff66] select-none">&gt;</span>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder='Type your search... (e.g. "AWS architecture diagram", "blue mechanical keyboard")'
-                  className="w-full bg-transparent px-2 py-2 text-[11px] text-[#00ff66] placeholder-[#007733] focus:outline-none"
+                  placeholder='Search memories... (e.g. "AWS diagram", "keyboard")'
+                  className="w-full bg-transparent px-2 py-2 text-[10px] sm:text-[11px] text-[#00ff66] placeholder-[#007733] focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="border border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-2 text-[11px] font-bold text-[#00ff66] tracking-wider transition-all hover:shadow-[0_0_10px_#00ff66]"
+                className="border border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-2 text-[10px] sm:text-[11px] font-bold text-[#00ff66] tracking-wider transition-all hover:shadow-[0_0_10px_#00ff66] shrink-0"
               >
                 [ SEARCH ]
               </button>
@@ -147,7 +147,7 @@ export default function OverviewPage() {
                     <button
                       key={filter}
                       onClick={() => handleQuickFilter(filter)}
-                      className="border border-[#005522] bg-[#010401]/80 hover:border-[#00ff66] hover:text-[#00ff66] px-2 py-0.5 text-[#00aa44] transition-colors"
+                      className="border border-[#005522] bg-[#010401]/80 hover:border-[#00ff66] hover:text-[#00ff66] px-1.5 sm:px-2 py-0.5 text-[#00aa44] text-[9px] sm:text-[10px] transition-colors"
                     >
                       [ {filter} ]
                     </button>
@@ -155,7 +155,7 @@ export default function OverviewPage() {
                 )}
               </div>
 
-              <div className="text-[9px] text-[#00aa44] tracking-tight">
+              <div className="hidden sm:block text-[9px] text-[#00aa44] tracking-tight">
                 SIGNAL ACQUIRED ... ANALYZING VISUAL DATA ... READY.
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function OverviewPage() {
         </div>
 
         {/* 2. Recent Memories Horizontal Grid */}
-        <div className="border border-[#005522] bg-[#020602] p-3">
+        <div className="border border-[#005522] bg-[#020602] p-2.5 sm:p-3">
           <div className="flex items-center justify-between mb-2">
             <div className="text-[11px] font-bold text-[#00ff66] tracking-wider">
               // RECENT MEMORIES
@@ -212,7 +212,7 @@ export default function OverviewPage() {
         </div>
 
         {/* 3. Collections Row */}
-        <div className="border border-[#005522] bg-[#020602] p-3">
+        <div className="border border-[#005522] bg-[#020602] p-2.5 sm:p-3">
           <div className="text-[11px] font-bold text-[#00ff66] tracking-wider mb-2">
             // COLLECTIONS
           </div>
@@ -241,7 +241,7 @@ export default function OverviewPage() {
         </div>
 
         {/* 4. Explore by Category Module */}
-        <div className="border border-[#005522] bg-[#020602] p-3">
+        <div className="border border-[#005522] bg-[#020602] p-2.5 sm:p-3">
           <div className="text-[11px] font-bold text-[#00ff66] tracking-wider mb-2">
             // EXPLORE BY CATEGORY
           </div>

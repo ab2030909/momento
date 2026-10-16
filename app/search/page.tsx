@@ -72,7 +72,7 @@ function SearchContent() {
     <div className="space-y-3 font-mono text-xs text-[#00ff66]">
       {/* Search Input Module */}
       <div className="border border-[#005522] bg-[#020602] p-3">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1 flex items-center border border-[#005522] bg-[#010401]">
             <span className="pl-2.5 text-[#00ff66] select-none">&gt;</span>
             <input
@@ -86,17 +86,17 @@ function SearchContent() {
           <button
             type="submit"
             disabled={loading}
-            className="border border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-2 text-[11px] font-bold text-[#00ff66] tracking-wider transition-all disabled:opacity-40"
+            className="border border-[#00ff66] bg-[#00220a] hover:bg-[#004414] px-4 py-2 text-[11px] font-bold text-[#00ff66] tracking-wider transition-all disabled:opacity-40 whitespace-nowrap"
           >
             [ {loading ? 'SCANNING...' : 'EXECUTE SCAN'} ]
           </button>
         </form>
 
-        <div className="mt-2 pt-2 border-t border-[#005522]/50 flex items-center justify-between text-[10px] text-[#00aa44]">
+        <div className="mt-2 pt-2 border-t border-[#005522]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] text-[#00aa44]">
           <div>
             SEARCH QUERY: <span className="text-[#00ff66]">"{q || '*'}"</span> | MATCHED: {results.length} SIGNALS
           </div>
-          <div className="flex gap-3 text-[9px]">
+          <div className="flex flex-wrap gap-2 text-[9px]">
             <span>[#] VECTOR EMBEDDINGS</span>
             <span>[T] OCR STRINGS</span>
             <span>[K] METADATA TOKENS</span>

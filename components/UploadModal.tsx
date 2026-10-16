@@ -158,15 +158,15 @@ export function UploadModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
-      <div className="relative w-full max-w-lg border-2 border-[#00ff66] bg-[#020502] p-5 shadow-[0_0_25px_rgba(0,255,102,0.25)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm font-mono text-xs text-[#00ff66]">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto border-2 border-[#00ff66] bg-[#020502] p-3 sm:p-5 shadow-[0_0_25px_rgba(0,255,102,0.25)]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#005522]">
+        <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-[#005522]">
           <div>
-            <h3 className="font-bold text-[#00ff66] tracking-wider text-sm">
+            <h3 className="font-bold text-[#00ff66] tracking-wider text-xs sm:text-sm">
               // TRANSMIT VISUAL MEMORY PAYLOAD
             </h3>
-            <p className="text-[10px] text-[#00aa44]">
+            <p className="text-[9px] sm:text-[10px] text-[#00aa44]">
               Target: Cloudinary Storage &amp; Groq AI Pipeline
             </p>
           </div>
