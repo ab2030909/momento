@@ -1,7 +1,13 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ClientAppShell } from '@/components/ClientAppShell';
 import { AuthProvider } from '@/lib/auth/AuthContext';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: 'MEMENTO.EXE - VISUAL-MEMORY-SYSTEM v1.0.0',
